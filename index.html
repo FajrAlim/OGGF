@@ -103,8 +103,9 @@
                 return view.addLayer(new itowns.ColorLayer('velib', {
                     source: velibSource,
                     style: {
-                        zoom: { min: 10, max: 20 },
-                        point: { color: 'white', line: 'green' },
+                        zoom: { min: 1, max: 19 },
+                        fill: { color: 'white', opacity: 0.9 },
+            		stroke: { color: 'cyan',},
                         text: {
                             field: '{name}\n(id: {@id})\n(continent: {is_in:continent})',
                             size: 14,
