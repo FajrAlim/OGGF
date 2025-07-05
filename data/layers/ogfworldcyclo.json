@@ -1,0 +1,14 @@
+{
+    "id": "CyclOGF",
+    "source": {
+        "crs": "EPSG:3857",
+	    "networkOptions": { "crossOrigin" : "anonymous" },
+        "format": "image/png",
+        "url": "https://tiles06.opengeofiction.net/cyclogf/${z}/${x}/${y}.png",
+    	"attribution": {
+    		"name":"Opengeofiction Contributor",
+    		"url": "http://opengeofiction.net/"
+    	},
+        "tileMatrixSet": "PM"
+    }
+}
