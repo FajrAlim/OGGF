@@ -78,7 +78,7 @@
 		// Add one imagery layer to the scene
 		itowns.Fetcher.json('data/layers/ogfworldcyclo.json').then(function _(config) {
                 	config.source = new itowns.TMSSource(config.source);
-                	const colorlayer = new itowns.ColorLayer('CyclOGF', config);
+                	const colorLayer = new itowns.ColorLayer('CyclOGF', config);
                 	view.addLayer(colorLayer);
 		});
 		
