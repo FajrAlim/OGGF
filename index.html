@@ -74,27 +74,8 @@
             });
 
             debug.createTileDebugUI(debugMenu.gui, view);
-			
-			
-			
-		// Define the source of the area data
-		var worldSource = new itowns.FileSource({
-               	 	url: 'https://raw.githubusercontent.com/FajrAlim/OGGF/main/data/layers/warudo.geojson',
-                	crs: 'EPSG:4326',
-                	format: 'application/json',
-            });
-            
-            // Define a style for the area data
-            var worldStyle = {
-                fill: {
-                    color: 'white',
-                    opacity: 0.3,
-                },
-                stroke: {
-                    color: 'black',
-                },
-            };
-            
+
+		
 	// As there is no Shapefile fetcher directly bundled within iTowns, we need to specify a method to fetch data.
             // We use here `multiple` fetcher, which can fetch multiple files within multiple formats.
             itowns.Fetcher.multiple(
