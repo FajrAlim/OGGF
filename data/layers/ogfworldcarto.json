@@ -1,0 +1,14 @@
+{
+    "id": "OGFCarto",
+    "source": {
+        "crs": "EPSG:3857",
+	    "networkOptions": { "crossOrigin" : "anonymous" },
+        "format": "image/png",
+        "url": "https://tiles05.opengeofiction.net/ogf-carto/${z}/${x}/${y}.png",
+    	"attribution": {
+    		"name":"Opengeofiction",
+    		"url": "http://opengeofiction.net/"
+    	},
+        "tileMatrixSet": "PM"
+    }
+}
