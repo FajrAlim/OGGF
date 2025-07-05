@@ -6,7 +6,7 @@
         "format": "image/png",
         "url": "https://tiles06.opengeofiction.net/cyclogf/${z}/${x}/${y}.png",
     	"attribution": {
-    		"name":"Opengeofiction Contributor",
+    		"name":"Tiles and data courtesy OpenGeofiction and contributors.",
     		"url": "http://opengeofiction.net/"
     	},
         "tileMatrixSet": "PM"
