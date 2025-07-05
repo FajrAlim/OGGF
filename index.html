@@ -77,11 +77,11 @@
 			
 			
 			
-			// Define the source of the area data
-			var worldSource = new itowns.FileSource({
-                url: 'https://raw.githubusercontent.com/FajrAlim/OGGF/main/data/layers/warudo.geojson',
-                crs: 'EPSG:4326',
-                format: 'application/json',
+		// Define the source of the area data
+		var worldSource = new itowns.FileSource({
+               	 	url: 'https://raw.githubusercontent.com/FajrAlim/OGGF/main/data/layers/warudo.geojson',
+                	crs: 'EPSG:4326',
+                	format: 'application/json',
             });
             
             // Define a style for the area data
@@ -95,13 +95,22 @@
                 },
             };
             
+		
+		// ---------- DISPLAY ORTHO-IMAGES : ----------
             // Create the area ColorLayer and add it to the view
             var worldLayer = new itowns.ColorLayer('NAME', {
                 source: worldSource,
                 style: worldStyle,
             });
             view.addLayer(worldLayer);
-
+            // ---------- DISPLAY ORTHO-IMAGES : ----------
+            // object. See Layer* for more info.
+            itowns.Fetcher.json('data/layers/ogfworldcarto.json').then(function _(config) {
+                config.source = new itowns.TMSSource(config.source);
+                var layer = new itowns.ColorLayer('ogfworldcarto', config);
+                view.addLayer(layer).then(menuGlobe.addLayerGUI.bind(menuGlobe));
+            });
+		
         </script>
     </body>
 </html>
