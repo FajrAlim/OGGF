@@ -79,7 +79,7 @@
 			
 			// Define the source of the area data
 			var worldSource = new itowns.FileSource({
-                url: 'https://raw.githubusercontent.com/iTowns/iTowns2-sample-data/master/multipolygon.geojson',
+                url: 'https://github.com/FajrAlim/OGGF/blob/main/data/layers/warudo.geojson',
                 crs: 'EPSG:4326',
                 format: 'application/json',
             });
@@ -96,7 +96,7 @@
             };
             
             // Create the area ColorLayer and add it to the view
-            var worldLayer = new itowns.ColorLayer('flood', {
+            var worldLayer = new itowns.ColorLayer('NAME', {
                 source: worldSource,
                 style: worldStyle,
             });
