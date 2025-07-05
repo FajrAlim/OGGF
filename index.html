@@ -103,11 +103,12 @@
                 return view.addLayer(new itowns.ColorLayer('velib', {
                     source: velibSource,
                     style: {
-                        fill: { color: 'white', opacity: 0.9 },
-            		stroke: { color: 'cyan'},
+                        zoom: { min: 2, max: 10 }
+			fill: { color: 'white', opacity: 0.9 },
+            		stroke: { color: '#1A1A1A'},
 			field: '{name}',
-                        size: 14,
-                        haloColor: 'white',
+                        size: 21,
+                        haloColor: 'black',
                         haloWidth: 1,
                         font: ['monospace'],
                         },
