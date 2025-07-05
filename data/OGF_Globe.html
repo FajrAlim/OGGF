@@ -1,0 +1,107 @@
+<html>
+    <head>
+        <title>Itowns - Globe</title>
+
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <link rel="stylesheet" type="text/css" href="css/example.css">
+        <link rel="stylesheet" type="text/css" href="css/LoadingScreen.css">
+        <link rel="stylesheet" type="text/css" href="css/widgets.css">
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.6/dat.gui.min.js"></script>
+    </head>
+    <body>
+        <div id="viewerDiv"></div>
+
+        <!-- Import iTowns source code -->
+        <script src="../dist/itowns.js"></script>
+        <script src="../dist/debug.js"></script>
+        <!-- Import iTowns Widgets plugin -->
+        <script src="../dist/itowns_widgets.js"></script>
+        <!-- Import iTowns LoadingScreen and GuiTools plugins -->
+        <script src="js/GUI/GuiTools.js"></script>
+        <script src="js/GUI/LoadingScreen.js"></script>
+
+
+        <script type="text/javascript">
+
+
+
+            // ---------- CREATE A GlobeView FOR SUPPORTING DATA VISUALIZATION : ----------
+
+            // Define camera initial position
+            const placement = {
+                coord: new itowns.Coordinates('EPSG:4326', 2.351323, 48.856712),
+                range: 25000000,
+            }
+
+            // `viewerDiv` will contain iTowns' rendering area (`<canvas>`)
+            const viewerDiv = document.getElementById('viewerDiv');
+
+            // Create a GlobeView
+            const view = new itowns.GlobeView(viewerDiv, placement);
+
+            // Setup loading screen and debug menu
+            setupLoadingScreen(viewerDiv, view);
+            const debugMenu = new GuiTools('menuDiv', view);
+
+
+            // ---------- ADD SOME WIDGETS : ----------
+
+            // ADD A SCALE :
+            const scale = new itowns_widgets.Scale(view, { position: 'bottom-right', translate: { x: -80 } });
+
+            // ADD NAVIGATION TOOLS :
+            const navigation = new itowns_widgets.Navigation(view, {
+                position: 'bottom-right',
+                translate: { y: -40 },
+            });
+
+            // ---------- DISPLAY ATMOSPHERIC LIGHTING : ----------
+
+            const atmosphere = view.getLayerById('atmosphere');
+            atmosphere.setRealisticOn(!view.isDebugMode);
+
+
+
+            // ---------- DEBUG TOOLS : ----------
+
+            // Toggle atmospheric lighting on/off.
+            const cRL = debugMenu.addGUI('RealisticLighting', !view.isDebugMode, function (v) {
+                atmosphere.setRealisticOn(v);
+                view.notifyChange(atmosphere);
+            });
+
+            debug.createTileDebugUI(debugMenu.gui, view);
+			
+			
+			
+			// Define the source of the area data
+			var worldSource = new itowns.FileSource({
+                url: 'https://raw.githubusercontent.com/iTowns/iTowns2-sample-data/master/multipolygon.geojson',
+                crs: 'EPSG:4326',
+                format: 'application/json',
+            });
+            
+            // Define a style for the area data
+            var worldStyle = {
+                fill: {
+                    color: 'brown',
+                    opacity: 0.3,
+                },
+                stroke: {
+                    color: 'black',
+                },
+            };
+            
+            // Create the area ColorLayer and add it to the view
+            var worldLayer = new itowns.ColorLayer('flood', {
+                source: worldSource,
+                style: worldStyle,
+            });
+            view.addLayer(worldLayer);
+
+        </script>
+    </body>
+</html>
