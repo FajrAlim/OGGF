@@ -32,7 +32,7 @@
 
             // Define camera initial position
             const placement = {
-                coord: new itowns.Coordinates('EPSG:4326', 2.351323, 48.856712),
+                coord: new itowns.Coordinates('EPSG:4326', 20.7256731, 86.7172307),
                 range: 25000000,
             }
 
@@ -74,50 +74,13 @@
             });
 
             debug.createTileDebugUI(debugMenu.gui, view);
-
 		
-	// As there is no Shapefile fetcher directly bundled within iTowns, we need to specify a method to fetch data.
-            // We use here `multiple` fetcher, which can fetch multiple files within multiple formats.
-            itowns.Fetcher.multiple(
-                'https://raw.githubusercontent.com/FajrAlim/OGGF/main/data/layers/layers',
-                {
-                    // fetch all files whose name match the `url` parameter value, and whose format is either `shp`,
-                    // `dbf`, `shx` or `prj`.
-                    arrayBuffer: ['shp', 'dbf', 'shx'],
-                    text: ['prj'],
-                },
-            ).then((fetched) => {
-                // Once our Shapefile data is fetched, we can parse it by running itowns built-in Shapefile parser.
-                return itowns.ShapefileParser.parse(fetched, {
-                    // Options indicating how the features should be built from data.
-                    out: {
-                        // Specitfy the crs to convert the input coordinates to.
-                        crs: view.tileLayer.extent.crs,
-                    },
-                });
-            }).then((parsed) => {
-                // We can then instantiate a FileSource, passing the parsed data,
-                // and create a Layer bound to this source.
-                const velibSource = new itowns.FileSource({ features: parsed });
-
-                return view.addLayer(new itowns.ColorLayer('velib', {
-                    source: velibSource,
-                    style: {
-                        zoom: { min: 2, max: 10 },
-			fill: { color: 'white', opacity: 0.9 },
-            		stroke: { color: '#1A1A1A'},
-			field: '{name}',
-                        size: 21,
-                        haloColor: 'black',
-                        haloWidth: 1,
-                        font: ['monospace'],
-                        },
-                    addLabelLayer: true,
-                }));
-            }).then((layer) => {
-                // Finally, we generate tooltip for when the mouse hovers the data displayed within our created layer.
-                FeatureToolTip.addLayer(layer, { filterAllProperties: false });
-            });
+		// Add one imagery layer to the scene
+		itowns.Fetcher.json('data/layers/ogfworldcyclo.json').then(function _(config) {
+                	config.source = new itowns.TMSSource(config.source);
+                	var layer = new itowns.ColorLayer('CylOGF', config);
+                	view.addLayer(layer).then(menuGlobe.addLayerGUI.bind(menuGlobe));
+           	});
 		
         </script>
     </body>
