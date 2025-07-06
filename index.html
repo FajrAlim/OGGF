@@ -90,6 +90,7 @@
 		});
 		
 
+		
             // ---------- DISPLAY VECTOR TILED BUILDING DATA AS 3D MESHES : ----------
 
             // Define the source of the building data. We use the mapbox Streets v8 tileset and Style JSON
@@ -97,9 +98,9 @@
 
             const buildingsSource = new itowns.VectorTilesSource({
                 style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
-                filter: (layers) => {
-                    return layers.id === 'building';
-                },
+				filter: (layer) => {
+					return layer['source-layer'] === 'building';
+				}
             });
 
 
@@ -113,17 +114,21 @@
                 style: {
                     fill: {
                         // the building with type = roof doesn't have same properties as the others
-			base_altitude: (p) => {
-				return p.min_height || 0;
-},                      extrusion_height: (p) => {
-                        	return p.height || 0;
+						base_altitude: (p) => {
+							return p.render_min_height || 0;
+						},                      
+						extrusion_height: (p) => {
+                            return p.render_height || 0;
                         },
                     },
                 }
             });
 
             // Add the FeatureGeometryLayer to the scene and to the debug menu.
-            view.addLayer(buildingsLayer);
+            view.addLayer(buildingsLayer).then(() => {
+		        debugMenu.addLayerGUI(buildingsLayer);
+	 });
+
 
 
         </script>
