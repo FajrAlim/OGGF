@@ -91,6 +91,7 @@
 
 		
 
+
             // ---------- DISPLAY VECTOR TILED BUILDING DATA AS 3D MESHES : ----------
 
             const buildingsSource = new itowns.VectorTilesSource({
@@ -103,19 +104,29 @@
 
             // Create a FeatureGeometryLayer to support building data.
             var buildingsLayer = new itowns.FeatureGeometryLayer('VTBuilding',{
-                batchId: function (property, featureId) { return featureId; },
                 source: buildingsSource,
                 zoom: {
                     min: 14,
                 },
-                batchId: function (property, featureId) {
-			console.log("Processing feature:", property);
-        		return featureId;
-   			},
+                style: {
+                    fill: {
+                        color: "hsl(35, 8%, 85%)",
+						base_altitude: (p) => p.render_height || 0,
+						extrusion_base: (p) => p.render_min_height || 0,
+						opacity: 0.8
+                        }
+                    },
+				batchId: function (property, featureId) {
+					console.log("Processing feature:", property);
+					return featureId;
+					},
                 });
 
             // Add the FeatureGeometryLayer to the scene and to the debug menu.
-            view.addLayer(buildingsLayer);
+            view.addLayer(buildingsLayer).then(() => {
+		        debugMenu.addLayerGUI(buildingsLayer);
+		    });
+
 
 
         </script>
