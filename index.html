@@ -97,7 +97,7 @@
             // https://docs.mapbox.com/data/tilesets/reference/mapbox-streets-v8/
 
             const buildingsSource = new itowns.VectorTilesSource({
-                style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
+                style: 'https://ogfvector.infinatio.us/data/openmaptiles.json',
 				filter: (layer) => {
 					return layer['source-layer'] === 'building';
 				}
