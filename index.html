@@ -87,7 +87,7 @@
 		
 		// Add OGF Vector Tiles
 		const vectorSource = new itowns.VectorTilesSource({
-		    style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
+		    style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json' + keyParam,
 		});
 		
 		const vectorLayer = new itowns.ColorLayer('OGFVector', {
