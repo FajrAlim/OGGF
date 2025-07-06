@@ -82,15 +82,16 @@
                 	view.addLayer(colorLayer);
 		});
 		
-		const vectorSource = new itowns.VectorTileSource({
-   		 style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
+		const vectorSource = new itowns.VectorTilesSource({
+		    sprite: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
 		});
-
-		const vectorLayer = new itowns.VectorTileLayer('OGFVector', {
-   		 source: vectorSource,
+		
+		const vectorLayer = new itowns.ColorLayer('OGFVector', {
+		    source: vectorSource,
 		});
-
+		
 		view.addLayer(vectorLayer);
+
 
         </script>
     </body>
