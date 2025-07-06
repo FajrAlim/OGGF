@@ -79,26 +79,20 @@
 		itowns.Fetcher.json('data/layers/ogfworldcyclo.json').then((config) => {
 		    config.source = new itowns.TMSSource(config.source);
 		
-		    const colorLayer = new itowns.ColorLayer('CyclOGF', config);
-		    view.addLayer(colorLayer).then(() => {
-		        debugMenu.addLayerGUI(colorLayer);
+		    const ogfLayer = new itowns.ColorLayer('CyclOGF', config);
+		    view.addLayer(ogfLayer).then(() => {
+		        debugMenu.addLayerGUI(ogfLayer);
 		    });
 		});
-		
-		// Add OGF Vector Tiles
-		const vectorSource = new itowns.VectorTilesSource({
-		    style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json' + keyParam,
-		});
-		
-		const vectorLayer = new itowns.ColorLayer('OGFVector', {
-		    source: vectorSource,
-		});
-		
-		view.addLayer(vectorLayer).then(() => {
-		    debugMenu.addLayerGUI(vectorLayer);
-		});
 
-
+		itowns.Fetcher.json('data/layers/osm.json').then((config) => {
+		    config.source = new itowns.TMSSource(config.source);
+			config.visible = false;
+		    const osmLayer = new itowns.ColorLayer('OpenStreetMap', config);
+		    view.addLayer(osmLayer).then(() => {
+		        debugMenu.addLayerGUI(osmLayer);
+		    });
+		});
 
         </script>
     </body>
