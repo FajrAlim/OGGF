@@ -87,8 +87,12 @@
 
 		itowns.Fetcher.json('data/layers/osm.json').then((config) => {
 		    config.source = new itowns.TMSSource(config.source);
-			config.visible = false;
-		    const osmLayer = new itowns.ColorLayer('OpenStreetMap', config);
+		
+		    const osmLayer = new itowns.ColorLayer('OpenStreetMap', {
+		        ...config,
+		        visible: false
+		    });
+		
 		    view.addLayer(osmLayer).then(() => {
 		        debugMenu.addLayerGUI(osmLayer);
 		    });
