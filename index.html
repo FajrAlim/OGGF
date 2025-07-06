@@ -76,12 +76,16 @@
             debug.createTileDebugUI(debugMenu.gui, view);
 		
 		// Add one imagery layer to the scene
-		itowns.Fetcher.json('data/layers/ogfworldcyclo.json').then(function _(config) {
-                	config.source = new itowns.TMSSource(config.source);
-                	const colorLayer = new itowns.ColorLayer('CyclOGF', config);
-                	view.addLayer(colorLayer);
+		itowns.Fetcher.json('data/layers/ogfworldcyclo.json').then((config) => {
+		    config.source = new itowns.TMSSource(config.source);
+		
+		    const colorLayer = new itowns.ColorLayer('CyclOGF', config);
+		    view.addLayer(colorLayer).then(() => {
+		        debugMenu.addLayerGUI(colorLayer);
+		    });
 		});
 		
+		// Add OGF Vector Tiles
 		const vectorSource = new itowns.VectorTilesSource({
 		    style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
 		});
@@ -90,7 +94,10 @@
 		    source: vectorSource,
 		});
 		
-		view.addLayer(vectorLayer);
+		view.addLayer(vectorLayer).then(() => {
+		    debugMenu.addLayerGUI(vectorLayer);
+		});
+
 
 
         </script>
