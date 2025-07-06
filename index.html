@@ -89,23 +89,6 @@
 		    });
 		});
 		
-		// Add OSM second
-		itowns.Fetcher.json('data/layers/osm.json').then((config) => {
-		    config.source = new itowns.TMSSource(config.source);
-		
-		    const osmLayer = new itowns.ColorLayer('OpenStreetMap', {
-		        ...config,
-		        visible: false
-		    });
-		
-		    view.addLayer(osmLayer).then(() => {
-		        debugMenu.addLayerGUI(osmLayer);
-		
-		        // Move CyclOGF to the top after both layers are added
-		        const index = view.getLayerIndexById('CyclOGF');
-		        view.moveLayerToIndex(view.getLayerById('CyclOGF'), view.getLayers().length - 1);
-		    });
-		});
 
 
         </script>
