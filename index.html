@@ -107,8 +107,8 @@
 				accurate: false,
 				style: {
 					fill: {						
-						base_altitude: (p) => p.min_height || 0,
-						extrusion_height: (p) => p.height || 5,
+						base_altitude: (p) => p.render_min_height || 0,
+						extrusion_height: (p) => p.render_height || 5,
 					}
 				},
 			});
