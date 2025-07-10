@@ -131,7 +131,7 @@
 		    style: {
 		        fill: {
 		            color: new itowns.THREE.Color(0x999999),
-		            base_altitude: (p) => parseFloat(p.height) || 0,
+		            base_altitude: (p) => parseFloat(p.min_height) || 0,
 		            extrusion_height: (p) => {
 		                return parseFloat(p.height) || (parseInt(p['building:levels']) * 3) || 5;
 		            }
