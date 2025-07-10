@@ -119,29 +119,31 @@
                 })
 				.catch(err => console.error("Error adding buildings layer:", err));
 
-	// Add a sanmartin test geometry layer, which will contain the multipolygon to display
-            var sanmartin = new itowns.FeatureGeometryLayer('sanmartin', {
-                // Use a FileSource to load a single file once
-                source: new itowns.FileSource({
-                    url: 'data/layers/sanmartin/sanmartin_buildings.geojson',
-                    crs: 'EPSG:4326',
-                    format: 'application/json',
-                }),
-                opacity: 0.7,
-                zoom: { min: 10 },
-                style: {
-                    fill: {
-			color: new itowns.THREE.Color(0xbbffbb),
-                        base_altitude: (p) => parseFloat(p.height) || 0,
-			extrusion_height: (p) => { return parseFloat(p.height) || (parseInt(p['building:levels']) * 3) || 5; }
+		// Add a sanmartin test geometry layer
+		var sanmartin = new itowns.FeatureGeometryLayer('sanmartin', {
+		    source: new itowns.FileSource({
+		        url: 'data/layers/sanmartin/sanmartin_buildings.geojson',
+		        crs: 'EPSG:4326',
+		        format: 'application/json',
+		    }),
+		    opacity: 0.7,
+		    zoom: { min: 10 },
+		    style: {
+		        fill: {
+		            color: new itowns.THREE.Color(0xbbffbb),
+		            base_altitude: (p) => parseFloat(p.height) || 0,
+		            extrusion_height: (p) => {
+		                return parseFloat(p.height) || (parseInt(p['building:levels']) * 3) || 5;
+		            }
+		        }
 		    }
-                }
-            });
+		});
+		
+		view.addLayer(sanmartin).then(function menu(layer) {
+		    var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
+		    debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
+		}).catch((err) => console.error("Error loading sanmartin layer:", err));
 
-            view.addLayer(sanmartin).then(function menu(layer) {
-                var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
-                debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
-            }).catch((err) => console.error("Error loading sanmartin layer:", err));
 		
         </script>
     </body>
