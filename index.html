@@ -131,9 +131,10 @@
                 zoom: { min: 10 },
                 style: {
                     fill: {
-                        base_altitude: (p) => p.min_height || 0,
-			extrusion_height: (p) => p.height || 5,
-                    }
+			color: new itowns.THREE.Color(0xbbffbb),
+                        base_altitude: (p) => parseFloat(p.height) || 0,
+			extrusion_height: (p) => { return parseFloat(p.height) || (parseInt(p['building:levels']) * 3) || 5; }
+		    }
                 }
             });
 
