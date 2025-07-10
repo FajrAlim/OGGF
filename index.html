@@ -118,6 +118,30 @@
                     debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
                 })
 				.catch(err => console.error("Error adding buildings layer:", err));
+
+	// Add a Khaiwoon test geometry layer, which will contain the multipolygon to display
+            var khaiwoon = new itowns.FeatureGeometryLayer('khaiwoon', {
+                // Use a FileSource to load a single file once
+                source: new itowns.FileSource({
+                    url: 'data/layers/khaiwoon/khaiwoon_buildings.geojson',
+                    crs: 'EPSG:4326',
+                    format: 'application/json',
+                }),
+                opacity: 0.7,
+                zoom: { min: 10 },
+                style: {
+                    fill: {
+                        base_altitude: (p) => p.min_height || 0,
+			extrusion_height: (p) => p.height || 5,
+                    }
+                }
+            });
+
+            view.addLayer(khaiwoon).then(function menu(layer) {
+                var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
+                debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
+            }).catch((err) => console.error("Error loading khaiwoon layer:", err));
+		
         </script>
     </body>
 </html>
