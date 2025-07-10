@@ -134,7 +134,7 @@
 		            base_altitude: (p) => parseFloat(p.min_height) || 0,
 		            extrusion_height: (p) => {
 				    const h = parseFloat(p.height);
-				    const min = parseFloat(p.min_height);
+				    const min = parseFloat(p.min_height) || 0;
 				    if (!isNaN(h) && !isNaN(min)) {
 				        return h - min;
 				    }
