@@ -119,11 +119,11 @@
                 })
 				.catch(err => console.error("Error adding buildings layer:", err));
 
-	// Add a Khaiwoon test geometry layer, which will contain the multipolygon to display
-            var khaiwoon = new itowns.FeatureGeometryLayer('khaiwoon', {
+	// Add a sanmartin test geometry layer, which will contain the multipolygon to display
+            var sanmartin = new itowns.FeatureGeometryLayer('sanmartin', {
                 // Use a FileSource to load a single file once
                 source: new itowns.FileSource({
-                    url: 'data/layers/khaiwoon/khaiwoon_buildings.geojson',
+                    url: 'data/layers/sanmartin/sanmartin_buildings.geojson',
                     crs: 'EPSG:4326',
                     format: 'application/json',
                 }),
@@ -138,10 +138,10 @@
                 }
             });
 
-            view.addLayer(khaiwoon).then(function menu(layer) {
+            view.addLayer(sanmartin).then(function menu(layer) {
                 var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
                 debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
-            }).catch((err) => console.error("Error loading khaiwoon layer:", err));
+            }).catch((err) => console.error("Error loading sanmartin layer:", err));
 		
         </script>
     </body>
