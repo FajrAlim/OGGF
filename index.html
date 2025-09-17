@@ -120,10 +120,10 @@
 				.catch(err => console.error("Error adding buildings layer:", err));
 
 		// Add a sanmartin test geometry layer
-		<!--
+		
 		var sanmartin = new itowns.FeatureGeometryLayer('sanmartin', {
 		    source: new itowns.FileSource({
-		        url: 'data/layers/sanmartin/sanmartin_buildings.geojson',
+		        url: 'data/layers/sanmartin/sanmartin_building.geojson',
 		        crs: 'EPSG:4326',
 		        format: 'application/json',
 		    }),
@@ -149,7 +149,7 @@
 		    var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
 		    debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
 		}).catch((err) => console.error("Error loading sanmartin layer:", err));
-		-->
+		
 
 		
         </script>
