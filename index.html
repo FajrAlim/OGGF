@@ -126,44 +126,22 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
 
             // ---------- DISPLAY VECTOR TILED BUILDING DATA AS 3D MESHES : ----------
 
-			const buildingsSource = new itowns.VectorTilesSource({
-				style: 'https://.../style.json',
-				filter: (layer) => {
-					return layer['source-layer'].includes('building')
-						   && layer.paint["fill-extrusion-color"];
-				}
-			});
-			
-            // Create a FeatureGeometryLayer to support building data.
-			var buildingsLayer = new itowns.FeatureGeometryLayer('VTBuilding',{
-				source: buildingsSource,
-				zoom: { min: 14 },
-				accurate: false,
-				style: {
-					fill: {						
-						base_altitude: (p) => p.render_min_height || 0,
-						extrusion_height: (p) => p.render_height || 5,
-					}
-				},
-			});
-            view.addLayer(buildingsLayer)
-                .then((layer) => {
-                    const gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
-                    debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
-                })
-				.catch(err => console.error("Error adding buildings layer:", err));
+const buildingsSource = new itowns.VectorTilesSource({
+    url: "https://ogfvector.infinatio.us/data/openmaptiles/{z}/{x}/{y}.pbf",
 
-		// Add a sanmartin test geometry layer
-		
-		var sanmartin = new itowns.FeatureGeometryLayer('sanmartin', {
-		    source: new itowns.FileSource({
-		        url: 'data/layers/sanmartin/sanmartin_building.geojson',
-		        crs: 'EPSG:4326',
-		        format: 'application/json',
-		    }),
-		    opacity: 0.7,
-		    zoom: { min: 10 },
-		    style: {
+    // optional: min/max zoom for vector tiles
+    zoom: { min: 0, max: 14 },
+
+    filter: layer => layer["source-layer"] === "building"
+});
+            
+// Building layer
+const buildingsLayer = new itowns.FeatureGeometryLayer("VTBuilding", {
+    source: buildingsSource,
+    opacity: 0.7,
+	zoom: { min: 10 },
+    accurate: false,
+    style: {
 		        fill: {
 		            color: new itowns.THREE.Color(0x999999),
 		            base_altitude: (p) => parseFloat(p.min_height) || 0,
@@ -177,15 +155,17 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
 				    return (parseInt(p['building:levels']) || 1) * 3 || 5;
 				}
 		        }
-		    }
-		});		
-		view.addLayer(sanmartin).then(function menu(layer) {
-		    var gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
-		    debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
-		}).catch((err) => console.error("Error loading sanmartin layer:", err));
-		
+    }
+});
 
-		
+view.addLayer(buildingsLayer)
+    .then(layer => {
+        const gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
+        debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
+    })
+    .catch(err => console.error("Error adding buildings layer:", err));
+
+
         </script>
     </body>
 </html>
