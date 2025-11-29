@@ -115,7 +115,7 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
 
       const material = new itowns.THREE.LineBasicMaterial({
         color: route.color || '#00ffff',
-        linewidth: route.weight || 1,
+        linewidth: route.weight || 3,
         transparent: true,
         opacity: route.opacity ?? 1
       });
