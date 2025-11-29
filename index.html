@@ -89,27 +89,45 @@
 		    });
 		});
 			//------------------AIRLINE--------------------
-			fetch("https://data.opengeofiction.net/utility/airline_routes.json")
+const airlineLayer = new itowns.Object3DLayer('airline_routes', {
+    source: null,  // not using a data source
+});
+
+view.addLayer(airlineLayer)
+    .then(layer => {
+        const gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
+        debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
+    })
+    .catch(err => console.error(err));
+fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
     routes.forEach(route => {
-      const { origin_lat, origin_lon, dest_lat, dest_lon, color, weight } = route;
+      const start = new itowns.Coordinates('EPSG:4326',
+          route.origin_lon, route.origin_lat);  
+      const end = new itowns.Coordinates('EPSG:4326',
+          route.dest_lon, route.dest_lat);
 
-      const start = new itowns.Coordinates('EPSG:4326', origin_lon, origin_lat, 0);
-      const end   = new itowns.Coordinates('EPSG:4326', dest_lon, dest_lat, 0);
+      const geom = new itowns.THREE.BufferGeometry().setFromPoints([
+        start.as(view.referenceCrs),
+        end.as(view.referenceCrs)
+      ]);
 
-      const points = [start.as(view.referenceCrs), end.as(view.referenceCrs)];
-      const geometry = new itowns.THREE.BufferGeometry().setFromPoints(points);
       const material = new itowns.THREE.LineBasicMaterial({
-        color: color || '#00ffff',
-        linewidth: weight || 1
+        color: route.color || '#00ffff',
+        linewidth: route.weight || 1,
+        transparent: true,
+        opacity: route.opacity ?? 1
       });
 
-      const line = new itowns.THREE.Line(geometry, material);
-      view.scene.add(line);
+      const line = new itowns.THREE.Line(geom, material);
+
+      airlineLayer.object3d.add(line);
     });
+
     view.notifyChange(true);
   });
+
 
 
             // ---------- DISPLAY VECTOR TILED BUILDING DATA AS 3D MESHES : ----------
