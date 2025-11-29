@@ -89,35 +89,96 @@
 		    });
 		});
 			//------------------AIRLINE--------------------
+import { Line2 } from 'three/examples/jsm/lines/Line2.js';
+import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
+import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
+// Create a dedicated layer for airline routes
+const airlineLayer = new itowns.Object3DLayer('airline_routes', {
+    source: null,
+});
+view.addLayer(airlineLayer)
+    .then(layer => {
+        const gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
+        debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
+    })
+    .catch(err => console.error(err));
+
+
+// Fetch airline route data
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
-  .then(r => r.json())
-  .then(routes => {
-    routes.forEach(route => {
-      const start = new itowns.Coordinates('EPSG:4326',
-          route.origin_lon, route.origin_lat);  
-      const end = new itowns.Coordinates('EPSG:4326',
-          route.dest_lon, route.dest_lat);
+    .then(r => r.json())
+    .then(routes => {
 
-      const geom = new itowns.THREE.BufferGeometry().setFromPoints([
-        start.as(view.referenceCrs),
-        end.as(view.referenceCrs)
-      ]);
+        routes.forEach(route => {
+            const { origin_lat, origin_lon, dest_lat, dest_lon } = route;
 
-      const material = new itowns.THREE.LineBasicMaterial({
-        color: route.color || '#00ffff',
-        linewidth: route.weight || 5,
-        transparent: true,
-        opacity: route.opacity ?? 1
-      });
+            // Altitude settings
+            const baseAlt = 0;        // at airport
+            const peakAlt = 90000;    // height of arc (90 km)
 
-      const line = new itowns.THREE.Line(geom, material);
+            // Convert coordinates (EPSG:4326)
+            const start = new itowns.Coordinates(
+                'EPSG:4326',
+                origin_lon,
+                origin_lat,
+                baseAlt
+            ).as(view.referenceCrs);
 
-      airlineLayer.object3d.add(line);
+            const mid = new itowns.Coordinates(
+                'EPSG:4326',
+                (origin_lon + dest_lon) / 2,
+                (origin_lat + dest_lat) / 2,
+                peakAlt
+            ).as(view.referenceCrs);
+
+            const end = new itowns.Coordinates(
+                'EPSG:4326',
+                dest_lon,
+                dest_lat,
+                baseAlt
+            ).as(view.referenceCrs);
+
+            // Create a 3D arc curve
+            const curve = new itowns.THREE.QuadraticBezierCurve3(start, mid, end);
+            const points = curve.getPoints(60); // smooth arc
+
+            // Prepare line geometry
+            const positions = [];
+            points.forEach(p => {
+                positions.push(p.x, p.y, p.z);
+            });
+
+            const geometry = new LineGeometry();
+            geometry.setPositions(positions);
+
+            // Create rainbow colors along the arc
+            const colors = [];
+            for (let i = 0; i < points.length; i++) {
+                const t = i / (points.length - 1); // 0 → 1
+                const rgb = rainbowRGB(t);
+                colors.push(rgb.r, rgb.g, rgb.b);
+            }
+            geometry.setColors(colors);
+
+            // Line material
+            const material = new LineMaterial({
+                vertexColors: true,
+                linewidth: 0.006,                // world units
+                transparent: true,
+                opacity: route.opacity ?? 1,
+            });
+
+            material.resolution.set(window.innerWidth, window.innerHeight);
+
+            // Create final line
+            const line = new Line2(geometry, material);
+            line.computeLineDistances();
+
+            airlineLayer.object3d.add(line);
+        });
+
+        view.notifyChange(true);
     });
-
-    view.notifyChange(true);
-  });
-
 
 
 
