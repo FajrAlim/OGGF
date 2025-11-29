@@ -89,96 +89,61 @@
 		    });
 		});
 			//------------------AIRLINE--------------------
-import { Line2 } from 'three/examples/jsm/lines/Line2.js';
-import { LineMaterial } from 'three/examples/jsm/lines/LineMaterial.js';
-import { LineGeometry } from 'three/examples/jsm/lines/LineGeometry.js';
-// Create a dedicated layer for airline routes
 const airlineLayer = new itowns.Object3DLayer('airline_routes', {
     source: null,
 });
+
 view.addLayer(airlineLayer)
-    .then(layer => {
-        const gui = debug.GeometryDebug.createGeometryDebugUI(debugMenu.gui, view, layer);
-        debug.GeometryDebug.addWireFrameCheckbox(gui, view, layer);
-    })
     .catch(err => console.error(err));
 
+// --- Configuration for Thickness ---
+const LINE_RADIUS = 500; // The thickness (radius) of the line in meters
+const SEGMENTS = 5;      // How smooth the tube's cross-section is (higher = smoother, slower)
 
-// Fetch airline route data
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
-    .then(r => r.json())
-    .then(routes => {
+  .then(r => r.json())
+  .then(routes => {
+    routes.forEach(route => {
+      // 1. Coordinates at a fixed, slightly raised altitude (100m)
+      // This ensures the line is clearly visible above the ground.
+      const alt = 100;
+      const start = new itowns.Coordinates('EPSG:4326',
+          route.origin_lon, route.origin_lat, alt);
+      const end = new itowns.Coordinates('EPSG:4326',
+          route.dest_lon, route.dest_lat, alt);
 
-        routes.forEach(route => {
-            const { origin_lat, origin_lon, dest_lat, dest_lon } = route;
+      // 2. Create the THREE.js Path (needed for TubeGeometry)
+      const points = [
+        start.as(view.referenceCrs),
+        end.as(view.referenceCrs)
+      ];
+      // This creates a straight line path
+      const path = new itowns.THREE.CatmullRomCurve3(points);
 
-            // Altitude settings
-            const baseAlt = 0;        // at airport
-            const peakAlt = 90000;    // height of arc (90 km)
+      // 3. Create the Tube Geometry
+      const geometry = new itowns.THREE.TubeGeometry(
+          path,         // The straight line path
+          1,            // Tuber Segments (doesn't matter for 2 points)
+          LINE_RADIUS,  // The radius/thickness of the tube (500 meters)
+          SEGMENTS,     // The number of sides for the tube cross-section
+          false         // Closed (no)
+      );
 
-            // Convert coordinates (EPSG:4326)
-            const start = new itowns.Coordinates(
-                'EPSG:4326',
-                origin_lon,
-                origin_lat,
-                baseAlt
-            ).as(view.referenceCrs);
+      // 4. Create the Mesh Material
+      const material = new itowns.THREE.MeshBasicMaterial({
+        color: route.color || 0x00ffff,
+        transparent: true,
+        opacity: route.opacity ?? 0.8,
+        side: itowns.THREE.DoubleSide // Important for visibility
+      });
 
-            const mid = new itowns.Coordinates(
-                'EPSG:4326',
-                (origin_lon + dest_lon) / 2,
-                (origin_lat + dest_lat) / 2,
-                peakAlt
-            ).as(view.referenceCrs);
-
-            const end = new itowns.Coordinates(
-                'EPSG:4326',
-                dest_lon,
-                dest_lat,
-                baseAlt
-            ).as(view.referenceCrs);
-
-            // Create a 3D arc curve
-            const curve = new itowns.THREE.QuadraticBezierCurve3(start, mid, end);
-            const points = curve.getPoints(60); // smooth arc
-
-            // Prepare line geometry
-            const positions = [];
-            points.forEach(p => {
-                positions.push(p.x, p.y, p.z);
-            });
-
-            const geometry = new LineGeometry();
-            geometry.setPositions(positions);
-
-            // Create rainbow colors along the arc
-            const colors = [];
-            for (let i = 0; i < points.length; i++) {
-                const t = i / (points.length - 1); // 0 → 1
-                const rgb = rainbowRGB(t);
-                colors.push(rgb.r, rgb.g, rgb.b);
-            }
-            geometry.setColors(colors);
-
-            // Line material
-            const material = new LineMaterial({
-                vertexColors: true,
-                linewidth: 0.006,                // world units
-                transparent: true,
-                opacity: route.opacity ?? 1,
-            });
-
-            material.resolution.set(window.innerWidth, window.innerHeight);
-
-            // Create final line
-            const line = new Line2(geometry, material);
-            line.computeLineDistances();
-
-            airlineLayer.object3d.add(line);
-        });
-
-        view.notifyChange(true);
+      // 5. Create the Mesh (instead of a Line) and add to layer
+      const mesh = new itowns.THREE.Mesh(geometry, material);
+      airlineLayer.object3d.add(mesh);
     });
+
+    view.notifyChange(true);
+  });
 
 
 
