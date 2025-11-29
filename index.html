@@ -89,58 +89,35 @@
 		    });
 		});
 			//------------------AIRLINE--------------------
-const airlineLayer = new itowns.Object3DLayer('airline_routes', {
-    source: null,
-});
-
-view.addLayer(airlineLayer)
-    .catch(err => console.error(err));
-
-// --- Configuration for Thickness ---
-const LINE_RADIUS = 500; // The thickness (radius) of the line in meters
-const SEGMENTS = 5;      // How smooth the tube's cross-section is (higher = smoother, slower)
-
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
     routes.forEach(route => {
-      // 1. Coordinates at a fixed, slightly raised altitude (100m)
-      // This ensures the line is clearly visible above the ground.
-      const alt = 100;
       const start = new itowns.Coordinates('EPSG:4326',
-          route.origin_lon, route.origin_lat, alt);
+          route.origin_lon, route.origin_lat);  
       const end = new itowns.Coordinates('EPSG:4326',
-          route.dest_lon, route.dest_lat, alt);
+          route.dest_lon, route.dest_lat);
 
-      // 2. Create the THREE.js Path (needed for TubeGeometry)
-      const points = [
+      const geom = new itowns.THREE.BufferGeometry().setFromPoints([
         start.as(view.referenceCrs),
         end.as(view.referenceCrs)
-      ];
-      // This creates a straight line path
-      const path = new itowns.THREE.CatmullRomCurve3(points);
+      ]);
 
-      // 3. Create the Tube Geometry
-      const geometry = new itowns.THREE.TubeGeometry(
-          path,         // The straight line path
-          1,            // Tuber Segments (doesn't matter for 2 points)
-          LINE_RADIUS,  // The radius/thickness of the tube (500 meters)
-          SEGMENTS,     // The number of sides for the tube cross-section
-          false         // Closed (no)
-      );
-
-      // 4. Create the Mesh Material
-      const material = new itowns.THREE.MeshBasicMaterial({
-        color: route.color || 0x00ffff,
+      const material = new itowns.THREE.LineBasicMaterial({
+        color: route.color || '#00ffff',
+        linewidth: route.weight || 1,
         transparent: true,
-        opacity: route.opacity ?? 0.8,
-        side: itowns.THREE.DoubleSide // Important for visibility
+        opacity: route.opacity ?? 1
       });
 
-      // 5. Create the Mesh (instead of a Line) and add to layer
-      const mesh = new itowns.THREE.Mesh(geometry, material);
-      airlineLayer.object3d.add(mesh);
+      const line = new itowns.THREE.Line(geom, material);
+
+      airlineLayer.object3d.add(line);
     });
+
+    view.notifyChange(true);
+  });
+
 
     view.notifyChange(true);
   });
@@ -150,7 +127,7 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
             // ---------- DISPLAY VECTOR TILED BUILDING DATA AS 3D MESHES : ----------
 
 			const buildingsSource = new itowns.VectorTilesSource({
-				style: 'https://ogfvector.infinatio.us/styles/OGFBright/style.json',
+				style: 'https://.../style.json',
 				filter: (layer) => {
 					return layer['source-layer'].includes('building')
 						   && layer.paint["fill-extrusion-color"];
