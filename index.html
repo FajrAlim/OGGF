@@ -28,13 +28,15 @@ container: 'map',
 style: {
             'version': 8,
             'sources': {
-                'raster-tiles': {
-                    'type': 'raster',
-                    'tiles': ['https://tiles06.opengeofiction.net/cyclogf/${z}/${x}/${y}.png'],
-                    'tileSize': 256,
-                    'minzoom': 0,
-                    'maxzoom': 19
-                }
+					'raster-tiles': {
+					    'type': 'raster',
+					    'scheme': 'xyz',
+					    'tiles': ['https://tiles06.opengeofiction.net/cyclogf/{z}/{x}/{y}.png'], 
+					    'tileSize': 256,
+					    'minzoom': 0,
+					    'maxzoom': 19,
+					    'attribution': 'Tiles and data courtesy © OpenGeofiction and contributors.'
+					}
             },
             'layers': [
                 {
@@ -104,4 +106,5 @@ map.addControl(draw, 'top-left');
 </script>
 
 </body>
+
 </html>
