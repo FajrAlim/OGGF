@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>OGGFLibre</title>
+	<meta property="og:description" content="Opengeofiction with MapLibre." />
+<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+<link href='https://cdn.jsdelivr.net/npm/maplibre-gl@latest/dist/maplibre-gl.css' rel='stylesheet' />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@watergis/maplibre-gl-terradraw@latest/dist/maplibre-gl-terradraw.css" />
+<style>
+body { margin: 0; padding: 0; }
+#map { position: absolute; top: 0; bottom: 0; width: 100%; background: #111;}
+		#toggle-routes { position: absolute; z-index: 10; top: 10px; left: 45px; padding: 8px 12px; background-color: #fff; border: 1px solid #ccc; cursor: pointer; font-family: sans-serif;}
+</style>
+</head>
+<body>
+
+<div id="map"></div>
+
+<script src='https://cdn.jsdelivr.net/npm/maplibre-gl@latest/dist/maplibre-gl.js'></script>
+<script src="https://cdn.jsdelivr.net/npm/@watergis/maplibre-gl-terradraw@latest/dist/maplibre-gl-terradraw.umd.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/@turf/turf@latest/turf.min.js'></script>
+
+<script>
+	
+const map = new maplibregl.Map({
+container: 'map',
+style: {
+            'version': 8,
+            'sources': {
+                'raster-tiles': {
+                    'type': 'raster',
+                    'tiles': ['https://tiles06.opengeofiction.net/cyclogf/${z}/${x}/${y}.png'],
+                    'tileSize': 256,
+                    'minzoom': 0,
+                    'maxzoom': 19
+                }
+            },
+            'layers': [
+                {
+                    'id': 'simple-tiles',
+                    'type': 'raster',
+                    'source': 'raster-tiles',
+                    'attribution': "Tiles and data courtesy © OpenGeofiction and contributors.",
+                }
+            ],
+            'id': 'blank'
+        },
+center: [86, 20],
+zoom: 2,
+		attributionControl: false,
+		rollEnabled: true		
+});
+	
+	map.on('style.load', () => {
+map.setProjection({
+type: 'globe',
+});
+});
+	
+	map.addControl(new maplibregl.AttributionControl({
+customAttribution: 'MapLibre | <a href="https://wiki.opengeofiction.net/index.php/OpenGeofiction:Copyright">© Opengeofiction and contributors</a>'}), 'bottom-right');
+	
+	map.addControl(new maplibregl.NavigationControl({
+visualizePitch: true,
+visualizeRoll: true,
+showZoom: true,
+showCompass: true
+}));
+	map.addControl(
+		new maplibregl.GlobeControl()
+	);
+	
+	map.on('load', () => {
+const attributionElement = document.querySelector('.maplibregl-ctrl-attrib');
+
+if (attributionElement) {
+const desiredAttributionHTML = 'MapLibre | <a href="https://wiki.opengeofiction.net/index.php/OpenGeofiction:Copyright">© Opengeofiction and contributors</a>';
+attributionElement.innerHTML = desiredAttributionHTML;
+}
+});
+		
+const draw = new MaplibreTerradrawControl.MaplibreTerradrawControl({
+modes: [
+'point',
+'linestring',
+'polygon',
+'rectangle',
+'circle',
+'freehand',
+'angled-rectangle',
+'sensor',
+'sector',
+'select',
+'delete-selection',
+'delete',
+'download'
+],
+open: true,
+});
+map.addControl(draw, 'top-left');
+	
+
+</script>
+
+</body>
+</html>
