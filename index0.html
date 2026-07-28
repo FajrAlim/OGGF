@@ -88,36 +88,68 @@
 		        debugMenu.addLayerGUI(ogfLayer);
 		    });
 		});
-			//------------------AIRLINE--------------------
-//------------------ AIRLINE (3D ARC ROUTE) --------------------
+			
+//------------------AIRLINE--------------------
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
     routes.forEach(route => {
       const { origin_lat, origin_lon, dest_lat, dest_lon, color, weight } = route;
-      const start = new itowns.Coordinates('EPSG:4326', origin_lon, origin_lat, 5000).as(view.referenceCrs);
-      const end   = new itowns.Coordinates('EPSG:4326', dest_lon, dest_lat, 5000).as(view.referenceCrs);
-      const vStart = new itowns.THREE.Vector3(start.x, start.y, start.z);
-      const vEnd   = new itowns.THREE.Vector3(end.x, end.y, end.z);
-      const mid = new itowns.THREE.Vector3().addVectors(vStart, vEnd).multiplyScalar(0.5);
-      const distance = vStart.distanceTo(vEnd);       
-      const altitudeBoost = Math.max(100000, distance * 0.25); 
-      mid.normalize().multiplyScalar(mid.length() + altitudeBoost);
-      const curve = new itowns.THREE.QuadraticBezierCurve3(vStart, mid, vEnd);
-      const points = curve.getPoints(30);
+
+      const segments = 64;
+      const points = [];
+
+      const lat1 = itowns.THREE.MathUtils.degToRad(origin_lat);
+      const lon1 = itowns.THREE.MathUtils.degToRad(origin_lon);
+      const lat2 = itowns.THREE.MathUtils.degToRad(dest_lat);
+      const lon2 = itowns.THREE.MathUtils.degToRad(dest_lon);
+
+      const dLat = lat2 - lat1;
+      const dLon = lon2 - lon1;
+      const a = Math.sin(dLat / 2) ** 2 +
+                Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+      const angularDist = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      const maxAltitude = angularDist * 6378137 * 0.15; // ~15% dari jarak
+
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+
+        const A = Math.sin((1 - t) * angularDist) / Math.sin(angularDist);
+        const B = Math.sin(t * angularDist) / Math.sin(angularDist);
+
+        const x = A * Math.cos(lat1) * Math.cos(lon1) + B * Math.cos(lat2) * Math.cos(lon2);
+        const y = A * Math.cos(lat1) * Math.sin(lon1) + B * Math.cos(lat2) * Math.sin(lon2);
+        const z = A * Math.sin(lat1) + B * Math.sin(lat2);
+
+        const lat = Math.atan2(z, Math.sqrt(x * x + y * y));
+        const lon = Math.atan2(y, x);
+
+        const altitude = Math.sin(t * Math.PI) * maxAltitude;
+
+        const coord = new itowns.Coordinates(
+          'EPSG:4326',
+          itowns.THREE.MathUtils.radToDeg(lon),
+          itowns.THREE.MathUtils.radToDeg(lat),
+          altitude
+        );
+
+        points.push(coord.as(view.referenceCrs));
+      }
+
       const geometry = new itowns.THREE.BufferGeometry().setFromPoints(points);
       const material = new itowns.THREE.LineBasicMaterial({
         color: color || '#00ffff',
-        linewidth: weight || 1.5,
-        transparent: true,
-        opacity: 0.8
+        linewidth: weight || 1,
+        depthTest: false 
       });
+
       const line = new itowns.THREE.Line(geometry, material);
+      line.renderOrder = 999; 
       view.scene.add(line);
     });
     view.notifyChange(true);
-  })
-  .catch(err => console.error("Error loading flight route:", err));
+  });
 
 
 
