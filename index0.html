@@ -89,27 +89,35 @@
 		    });
 		});
 			//------------------AIRLINE--------------------
+//------------------ AIRLINE (3D ARC ROUTE) --------------------
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
     routes.forEach(route => {
       const { origin_lat, origin_lon, dest_lat, dest_lon, color, weight } = route;
-
-      const start = new itowns.Coordinates('EPSG:4326', origin_lon, origin_lat, 0);
-      const end   = new itowns.Coordinates('EPSG:4326', dest_lon, dest_lat, 0);
-
-      const points = [start.as(view.referenceCrs), end.as(view.referenceCrs)];
+      const start = new itowns.Coordinates('EPSG:4326', origin_lon, origin_lat, 5000).as(view.referenceCrs);
+      const end   = new itowns.Coordinates('EPSG:4326', dest_lon, dest_lat, 5000).as(view.referenceCrs);
+      const vStart = new itowns.THREE.Vector3(start.x, start.y, start.z);
+      const vEnd   = new itowns.THREE.Vector3(end.x, end.y, end.z);
+      const mid = new itowns.THREE.Vector3().addVectors(vStart, vEnd).multiplyScalar(0.5);
+      const distance = vStart.distanceTo(vEnd);       
+      const altitudeBoost = Math.max(100000, distance * 0.25); 
+      mid.normalize().multiplyScalar(mid.length() + altitudeBoost);
+      const curve = new itowns.THREE.QuadraticBezierCurve3(vStart, mid, vEnd);
+      const points = curve.getPoints(30);
       const geometry = new itowns.THREE.BufferGeometry().setFromPoints(points);
       const material = new itowns.THREE.LineBasicMaterial({
         color: color || '#00ffff',
-        linewidth: weight || 1
+        linewidth: weight || 1.5,
+        transparent: true,
+        opacity: 0.8
       });
-
       const line = new itowns.THREE.Line(geometry, material);
       view.scene.add(line);
     });
     view.notifyChange(true);
-  });
+  })
+  .catch(err => console.error("Error loading flight route:", err));
 
 
 
