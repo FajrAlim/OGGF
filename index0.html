@@ -90,6 +90,7 @@
 		});
 			
 //------------------AIRLINE--------------------
+
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
@@ -110,7 +111,10 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
                 Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
       const angularDist = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
-      const maxAltitude = angularDist * 6378137 * 0.15; // ~15% dari jarak
+      const rawAltitude = angularDist * 6378137 * 0.08;
+      const maxAltitude = Math.min(rawAltitude, 400000);
+
+      if (angularDist < 1e-6) return; // skip kalau origin == dest
 
       for (let i = 0; i <= segments; i++) {
         const t = i / segments;
@@ -141,11 +145,15 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
       const material = new itowns.THREE.LineBasicMaterial({
         color: color || '#00ffff',
         linewidth: weight || 1,
-        depthTest: false 
+        depthTest: true,
+        depthWrite: false,
+        polygonOffset: true,
+        polygonOffsetFactor: -4,
+        polygonOffsetUnits: -4
       });
 
       const line = new itowns.THREE.Line(geometry, material);
-      line.renderOrder = 999; 
+      line.renderOrder = 10;
       view.scene.add(line);
     });
     view.notifyChange(true);
