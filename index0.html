@@ -91,6 +91,10 @@
 			
 //------------------AIRLINE--------------------
 
+const airlineGroup = new itowns.THREE.Group();
+airlineGroup.name = "AirlineRoutes";
+view.scene.add(airlineGroup);
+
 fetch("https://data.opengeofiction.net/utility/airline_routes.json")
   .then(r => r.json())
   .then(routes => {
@@ -114,7 +118,7 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
       const rawAltitude = angularDist * 6378137 * 0.08;
       const maxAltitude = Math.min(rawAltitude, 400000);
 
-      if (angularDist < 1e-6) return; // skip kalau origin == dest
+      if (angularDist < 1e-6) return;
 
       for (let i = 0; i <= segments; i++) {
         const t = i / segments;
@@ -154,10 +158,17 @@ fetch("https://data.opengeofiction.net/utility/airline_routes.json")
 
       const line = new itowns.THREE.Line(geometry, material);
       line.renderOrder = 10;
-      view.scene.add(line);
+
+      airlineGroup.add(line);
     });
+
     view.notifyChange(true);
   });
+
+const cAirline = debugMenu.addGUI('ShowAirlineRoutes', true, function (v) {
+    airlineGroup.visible = v;
+    view.notifyChange();
+});
 
 
 
