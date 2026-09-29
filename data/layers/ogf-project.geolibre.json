@@ -1,0 +1,14 @@
+{
+  "version": "0.1.0",
+  "name": "OpenGeofiction Map",
+  "mapView": {
+    "center": [86.70, 20.50],
+    "zoom": 3,
+    "bearing": 0,
+    "pitch": 0
+  },
+  "basemapStyleUrl": "https://raw.githubusercontent.com/FajrAlim/OGGF/refs/heads/main/data/layers/ogf-style-maplibre.json",
+  "basemapVisible": true,
+  "basemapOpacity": 1,
+  "layers": []
+}
