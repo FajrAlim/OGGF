@@ -1,0 +1,23 @@
+{
+  "version": 8,
+  "name": "OpenGeofiction CyclOGF",
+  "sources": {
+    "ogf-cyclo": {
+      "type": "raster",
+      "tiles": [
+        "https://tiles06.opengeofiction.net/cyclogf/{z}/{x}/{y}.png"
+      ],
+      "tileSize": 256,
+      "attribution": "Tiles and data courtesy OpenGeofiction and contributors. <a href=\"http://opengeofiction.net/\">http://opengeofiction.net/</a>"
+    }
+  },
+  "layers": [
+    {
+      "id": "ogf-cyclo-layer",
+      "type": "raster",
+      "source": "ogf-cyclo",
+      "minzoom": 0,
+      "maxzoom": 19
+    }
+  ]
+}
